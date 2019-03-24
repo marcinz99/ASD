@@ -19,6 +19,7 @@ void IniTab(node* &first, int t[], int s){
     node* d = new node;
     first = d;
     d->value = t[0];
+
     for(int i=1; i<s; i++){
         d->next = new node;
         d = d->next;
@@ -26,76 +27,61 @@ void IniTab(node* &first, int t[], int s){
     }
 }
 
-void Linkin(node* &p, node* &q, node* &r){
-    q->next = r;
+void Linkin(node* &p, node* &first, node* &r){
+    first->next = r;
     if(p != nullptr){
         node* d = p;
-        while(d->next != nullptr){
-            d = d->next;
-        }
-        d->next = q;
-        q = p;
+        while(d->next != nullptr) d = d->next;
+        d->next = first;
+        first = p;
     }
-    p = nullptr;
-    r = nullptr;
+    p = r = nullptr;
 }
 
-void Partition(node* &first, node* &p, node* &r){
+void Partition(node* &p, node* &first, node* &r){
     node* p_start = nullptr;
     node* r_start = nullptr;
 
     while(first->next != nullptr){
-        if(first->next->value < (first->value)){
-            if(p == nullptr){
-                p = first->next;
-                p->value = first->next->value;
-                p_start = p;
-            }
+        if(first->next->value <= first->value){
+            if(p_start == nullptr) p_start = p = first->next;
             else{
                 p->next = first->next;
                 p = p->next;
-                p->value = first->next->value;
             }
         }
         else{
-            if(r == nullptr){
-                r = first->next;
-                r->value = first->next->value;
-                r_start = r;
-            }
+            if(r_start == nullptr) r_start = r = first->next;
             else{
                 r->next = first->next;
                 r = r->next;
-                r->value = first->next->value;
             }
         }
         first->next = first->next->next;
     }
-    if(p != nullptr){
-        p->next = nullptr;
-        p = p_start;
-    }
-    if(r != nullptr){
-        r->next = nullptr;
-        r = r_start;
-    }
+    if(p != nullptr) p->next = nullptr;
+    if(r != nullptr) r->next = nullptr;
+
+    p = p_start;
+    r = r_start;
 }
 
 void Quicksort(node* &first){
     if(first == nullptr || first->next == nullptr) return;
     node* p = nullptr;
     node* r = nullptr;
-
-    Partition(first, p, r);
+    
+    Partition(p, first, r);
     Quicksort(p);
     Quicksort(r);
-    Linkin(p,first,r);
+    Linkin(p, first, r);
 }
 
 int main(){
-    int t[] = {7,6,4,1,3,3,2,10,9,8,5,5};
+    int t[] = {4,5,4,3,1,9,8,8,7};
     node* a = nullptr;
-    IniTab(a, t, 12);
+    IniTab(a, t, 9);
+    Wypisz(a);
     Quicksort(a);
     Wypisz(a);
 }
