@@ -7,7 +7,7 @@ struct node{
 };
 
 void Wypisz(node* first){
-    cout << "Elementy listy: ";
+    cout << "Elementy: ";
     while(first != nullptr){
         cout << first->value << ", ";
         first = first->next;
@@ -15,11 +15,10 @@ void Wypisz(node* first){
 }
 
 void IniTab(node* &first, int t[], int s){
-    if(first != nullptr || s<=0) return;
-
+    if(first != nullptr) return;
     node* d = new node;
-    first = d;
     d->value = t[0];
+    first = d;
 
     for(int i=1; i<s; i++){
         d->next = new node;
@@ -29,54 +28,51 @@ void IniTab(node* &first, int t[], int s){
 }
 
 node* Split(node* first){
-    int x = first->value;
     node* second = first;
-
-    while((first=first->next) != nullptr && (first=first->next) != nullptr){
+    while((first=first->next)!=nullptr && (first=first->next)!=nullptr){
         second = second->next;
     }
-    first = second;
+    node* d = second;
     second = second->next;
-    first->next = nullptr;
+    d->next = nullptr;
     return second;
 }
 
-void Merge(node* &p, node* &r){
+void Merge(node* &first, node* &second){
     node* d = new node;
     node* h = d;
 
-    while(p != nullptr && r != nullptr){
-        d->next = new node;
-        d = d->next;
-
-        if(p->value < r->value){
-            d->value = p->value;
-            p = p->next;
+    while(first!=nullptr && second!=nullptr){
+        if(first->value <= second->value){
+            d->next = first;
+            first = first->next;
         }
         else{
-            d->value = r->value;
-            r = r->next;
+            d->next = second;
+            second = second->next;
         }
+        d = d->next;
     }
-    if(p != nullptr) d->next = p;
-    if(r != nullptr) d->next = r;
-    p = h->next;
+    if(first != nullptr) d->next = first;
+    if(second != nullptr) d->next = second;
+
+    first = h->next;
     delete h;
 }
 
-void MergeSort(node* &first){
+void Mergesort(node* &first){
     if(first == nullptr || first->next == nullptr) return;
     node* second = Split(first);
 
-    MergeSort(first);
-    MergeSort(second);
+    Mergesort(first);
+    Mergesort(second);
     Merge(first, second);
 }
 
 int main(){
-    int t[] = {6,2,3,4,5,1,7,8};
+    int t[] = {5,8,3,5,5,10,9,8,7,7};
     node* a = nullptr;
-    IniTab(a, t, 8);
-    MergeSort(a);
+    IniTab(a, t, 10);
+    Mergesort(a);
     Wypisz(a);
 }
