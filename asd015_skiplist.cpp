@@ -27,7 +27,21 @@ void Wypisz(skiplist* slist){
 }
 
 void WypiszFull(skiplist* slist){
-
+    cout << "> Analiza skiplisty:\n";
+    if(slist == nullptr){
+        cout << "## Skiplista nie istnieje.\n\n";
+        return;
+    }
+    cout << "  Liczba poziomow: " << slist->max_lvl+1 << "\n";
+    SLnode* iter;
+    for(int i=slist->max_lvl; i>=0; i--){
+        cout << "  # Poziom " << i << ": -inf, ";
+        iter = slist->first->next[i];
+        while(iter != nullptr){
+            cout << iter->value << ", ";
+            iter = iter->next[i];
+        }cout << "\n";
+    }cout << "\n";
 }
 
 int Random(){
@@ -87,8 +101,7 @@ void Insert(skiplist* &slist, int val){
             if(current->next[level] == nullptr || current->next[level]->value > val){
                 from[level] = current;
                 to[level] = current->next[level];
-                level -= 1;
-                current -= 1;
+                level--;
             }
             continue;
         }
@@ -96,7 +109,8 @@ void Insert(skiplist* &slist, int val){
     }
 
     from[0] = current;
-    to[0] = current->next[0];
+    if(current->next != nullptr) to[0] = current->next[0];
+    else to[0] = nullptr;
 
     int k = Random();
     if(k > slist->max_lvl){
@@ -110,6 +124,11 @@ void Insert(skiplist* &slist, int val){
         for(int i=0; i<=k-1; i++){
             new_first->next[i] = slist->first->next[i];
         }new_first->next[k] = nullptr;
+
+
+        for(int i=0; i<slist->max_lvl; i++){
+            if(from[i]==slist->first) from[i] = new_first;
+        }
 
         slist->first = new_first;
         from[slist->max_lvl] = slist->first;
@@ -134,7 +153,15 @@ int main(){
     int t[] = {1,2,3,5,7};
     skiplist* a = nullptr;
     IniTab_LVL_0(a, t, 5);
-    Wypisz(a);
+    WypiszFull(a);
     Insert(a, 8);
-    Wypisz(a);
+    WypiszFull(a);
+    Insert(a, 10);
+    WypiszFull(a);
+    Insert(a, -7);
+    WypiszFull(a);
+    Insert(a, 2);
+    WypiszFull(a);
+    Insert(a, 3);
+    WypiszFull(a);
 }
