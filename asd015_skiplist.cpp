@@ -148,20 +148,16 @@ void Insert(skiplist* &slist, int val){
     delete[] to;
 }
 
-int main(){
+void Initialize(skiplist* &slist, int t[], int s){
     srand(time(0));
-    int t[] = {1,2,3,5,7};
+    for(int i=0; i<s; i++){
+        Insert(slist, t[i]);
+    }
+}
+
+int main(){
+    int t[] = {10,9,8,7,6,5,4,3,2,1};
     skiplist* a = nullptr;
-    IniTab_LVL_0(a, t, 5);
-    WypiszFull(a);
-    Insert(a, 8);
-    WypiszFull(a);
-    Insert(a, 10);
-    WypiszFull(a);
-    Insert(a, -7);
-    WypiszFull(a);
-    Insert(a, 2);
-    WypiszFull(a);
-    Insert(a, 3);
+    Initialize(a, t, 10);
     WypiszFull(a);
 }
