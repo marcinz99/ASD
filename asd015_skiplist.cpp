@@ -125,7 +125,6 @@ void Insert(skiplist* &slist, int val){
             new_first->next[i] = slist->first->next[i];
         }new_first->next[k] = nullptr;
 
-
         for(int i=0; i<slist->max_lvl; i++){
             if(from[i]==slist->first) from[i] = new_first;
         }
