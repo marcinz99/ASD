@@ -129,10 +129,14 @@ void Insert(skiplist* &slist, int val){
         for(int i=0; i<slist->max_lvl; i++){
             if(from[i]==slist->first) from[i] = new_first;
         }
+        SLnode* tmp = slist->first;
 
         slist->first = new_first;
         from[slist->max_lvl] = slist->first;
         to[slist->max_lvl] = nullptr;
+
+        delete[] tmp->next;
+        delete tmp;
     }
 
     SLnode* inserted = new SLnode;
