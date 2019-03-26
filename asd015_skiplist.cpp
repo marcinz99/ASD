@@ -151,16 +151,48 @@ void Insert(skiplist* &slist, int val){
     delete[] to;
 }
 
+void Delete(skiplist* &slist, int val){
+    if(slist == nullptr) return;
+    int level = slist->max_lvl;
+    SLnode* current = slist->first;
+
+    while(true){
+        if(current->next[level] != nullptr && current->next[level]->value < val){
+            current = current->next[level];
+            continue;
+        }
+        if(level > 0){
+            if(current->next[level] == nullptr || current->next[level]->value > val){
+                level--;
+                continue;
+            }
+            if(current->next[level] != nullptr && current->next[level]->value == val){
+                current->next[level] = current->next[level]->next[level];
+                level--;
+                continue;
+            }
+        }
+        break;
+    }
+    if(current->next[level] != nullptr && current->next[level]->value == val){
+        current->next[level] = current->next[level]->next[level];
+    }
+    //dodac usuwanie zbednych poziomow
+    //i ewentualne usuniecie calej skiplisty jesli jest pusta
+}
+
 void Initialize(skiplist* &slist, int t[], int s){
-    srand(time(0));
     for(int i=0; i<s; i++){
         Insert(slist, t[i]);
     }
 }
 
 int main(){
+    srand(time(0));
     int t[] = {10,9,8,7,6,5,4,3,2,1};
     skiplist* a = nullptr;
     Initialize(a, t, 10);
+    WypiszFull(a);
+    Delete(a, 2);
     WypiszFull(a);
 }
