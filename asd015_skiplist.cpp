@@ -29,7 +29,7 @@ void Wypisz(skiplist* slist){
 void WypiszFull(skiplist* slist){
     cout << "> Analiza skiplisty:\n";
     if(slist == nullptr){
-        cout << "## Skiplista nie istnieje.\n\n";
+        cout << "## Skiplista nie istnieje lub jest pusta.\n\n";
         return;
     }
     cout << "  Liczba poziomow: " << slist->max_lvl+1 << "\n";
@@ -175,10 +175,17 @@ void Delete(skiplist* &slist, int val){
         break;
     }
     if(current->next[level] != nullptr && current->next[level]->value == val){
+        SLnode* tmp = current->next[level];
         current->next[level] = current->next[level]->next[level];
+        delete[] tmp->next;
+        delete[] tmp;
     }
-    //dodac usuwanie zbednych poziomow
-    //i ewentualne usuniecie calej skiplisty jesli jest pusta
+    while(slist->first->next[slist->max_lvl]==nullptr) slist->max_lvl--;
+    if(slist->max_lvl==-1){
+        delete[] slist->first->next;
+        delete[] slist;
+        slist = nullptr;
+    }
 }
 
 void Initialize(skiplist* &slist, int t[], int s){
@@ -193,6 +200,10 @@ int main(){
     skiplist* a = nullptr;
     Initialize(a, t, 10);
     WypiszFull(a);
-    Delete(a, 2);
-    WypiszFull(a);
+
+    for(int i=0; i<10; i++){
+        cout << "Delete: " << t[i] << "\n";
+        Delete(a, t[i]);
+        WypiszFull(a);
+    }
 }
