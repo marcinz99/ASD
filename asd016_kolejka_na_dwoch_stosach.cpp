@@ -79,7 +79,7 @@ void Put(kolejka* &kol, int val){
 }
 
 int Get(kolejka* &kol){
-    Get(kol->stos);
+    return Get(kol->stos);
 }
 
 int main(){
