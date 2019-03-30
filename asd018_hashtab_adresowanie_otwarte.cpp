@@ -57,7 +57,7 @@ void Wypisz(hashtab* ht){
             cout << ht->data[i].key << ", ";
             cout << ht->data[i].value << "]\n";
         }
-    }cout << "\n\n";
+    }cout << "\n";
 }
 
 int Hashing(const string &key, const int &mod){
@@ -95,7 +95,7 @@ void Insert(hashtab* &ht, const string &ke, int val){
 void Resize(hashtab* &ht){
     hashtab* d = new hashtab(2*ht->N);
     for(int i=0; i<ht->N; i++){
-        if(ht->data[i].occupied == true){
+        if(ht->data[i].occupied){
             Insert(d, ht->data[i].key, ht->data[i].value);
         }
     }
@@ -110,10 +110,47 @@ void IniTab(hashtab* &ht, dataset data[], int n){
     }
 }
 
+int Find(hashtab* ht, const string &ke){
+    if(ht == nullptr) return -1;
+    int i = 0;
+    int shortcut = Hashing(ke, ht->N);
+    while(ht->data[shortcut].occupied || ht->data[shortcut].deleted){
+        if(ht->data[shortcut].key==ke && ht->data[shortcut].occupied){
+            return ht->data[shortcut].value;
+        }
+        shortcut += ht->C;
+        shortcut %= ht->N;
+        i++;
+    }
+    return -1;
+}
+
+void Delete(hashtab* ht, const string &ke){
+    if(ht == nullptr) return;
+    int i = 0;
+    int shortcut = Hashing(ke, ht->N);
+    while(ht->data[shortcut].occupied || ht->data[shortcut].deleted){
+        if(ht->data[shortcut].key==ke && ht->data[shortcut].occupied){
+            ht->data[shortcut].occupied = false;
+            ht->data[shortcut].deleted = true;
+            ht->q--;
+            return;
+        }
+        shortcut += ht->C;
+        shortcut %= ht->N;
+        i++;
+    }
+    return;
+}
+
 int main(){
     hashtab* a = nullptr;
-    dataset data[] = {{"ashuyghdf", 5},{"asuiujkhf", 5},{"ttuygvtff", 8},{"ttuyguuhuhf", 8},{"xzxSssf", 8},{"tyfytftyf", 8}};
+    dataset data[] = {{"ashuyghdf", 5},{"asuiujkhf", 5},{"ttuygvtff", 8},{"ttuyguuhuhf", 8},{"xzxSssf", 15},{"tyfytftyf", 8}};
     IniTab(a, data, 6);
+    Wypisz(a);
+    cout << "Find xzxSssf: " << Find(a, "xzxSssf") << "\n";
+    cout << "Delete xzxSssf\n";
+    Delete(a, "xzxSssf");
     Wypisz(a);
     delete a;
 }
