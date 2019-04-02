@@ -15,14 +15,13 @@ struct cell{
 
 int Multiplier(int n){
     auto nwd = [](int a, int b)mutable->int{
-        while(b!=0){
+        while(b != 0){
             a %= b;
             if(b>a) a^=b^=a^=b;
-        }
-        return a;
+        }return a;
     };
     int i = 2;
-    while(nwd(i, n) != 1) i++;
+    while(nwd(i,n)!=1) i++;
     return i;
 }
 
@@ -61,7 +60,7 @@ void Wypisz(hashtab* ht){
 }
 
 int Hashing(const string &key, const int &mod){
-    int shortcut = 0;
+    int shortcut = 1000;
     for(int i=0; i<key.size(); i++){
         shortcut += 11*key[i];
         shortcut %= mod;
@@ -70,20 +69,20 @@ int Hashing(const string &key, const int &mod){
 }
 
 void Init(hashtab* &ht, int n){
-    if(ht != nullptr) return;
+    if(ht != nullptr) delete ht;
     ht = new hashtab(n);
 }
 
 void Resize(hashtab*&);
 
 void Insert(hashtab* &ht, const string &ke, int val){
+    if(ht == nullptr) return;
     if((float)ht->q/ht->N >= 0.8) Resize(ht);
-    int i = 0;
+
     int shortcut = Hashing(ke, ht->N);
-    while(ht->data[shortcut].occupied==true){
+    while(ht->data[shortcut].occupied){
         shortcut += ht->C;
         shortcut %= ht->N;
-        i++;
     }
     ht->data[shortcut].key = ke;
     ht->data[shortcut].value = val;
@@ -112,7 +111,6 @@ void IniTab(hashtab* &ht, dataset data[], int n){
 
 int Find(hashtab* ht, const string &ke){
     if(ht == nullptr) return -1;
-    int i = 0;
     int shortcut = Hashing(ke, ht->N);
     while(ht->data[shortcut].occupied || ht->data[shortcut].deleted){
         if(ht->data[shortcut].key==ke && ht->data[shortcut].occupied){
@@ -120,14 +118,12 @@ int Find(hashtab* ht, const string &ke){
         }
         shortcut += ht->C;
         shortcut %= ht->N;
-        i++;
     }
     return -1;
 }
 
 void Delete(hashtab* ht, const string &ke){
     if(ht == nullptr) return;
-    int i = 0;
     int shortcut = Hashing(ke, ht->N);
     while(ht->data[shortcut].occupied || ht->data[shortcut].deleted){
         if(ht->data[shortcut].key==ke && ht->data[shortcut].occupied){
@@ -138,7 +134,6 @@ void Delete(hashtab* ht, const string &ke){
         }
         shortcut += ht->C;
         shortcut %= ht->N;
-        i++;
     }
     return;
 }
