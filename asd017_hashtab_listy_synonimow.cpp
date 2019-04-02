@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-struct dataset{
+struct data{
     string key;
     int value;
 };
@@ -25,56 +25,57 @@ struct hashtab{
     };
     ~hashtab(){
         node* tmp;
-        for(int i=0; i<N; i++){
-            tmp = first[i];
+        for(int i=0; i<N;){
             if(first[i] != nullptr){
-                first[i] = first[i]->next;
-            }
-            while(tmp != nullptr){
-                delete tmp;
                 tmp = first[i];
-                if(first[i] != nullptr){
-                    first[i] = first[i]->next;
-                }
+                first[i] = first[i]->next;
+                delete tmp;
             }
-        }delete[] first;
+            else i++;
+        }
+        delete[] first;
     };
 };
 
 void Wypisz(hashtab* ht){
+    cout << "Analiza tablicy z haszowaniem:\n";
     if(ht == nullptr){
-        cout << "Nie znaleziono tablicy z haszowaniem.\n\n";
+        cout << "> Nie odnaleziono tablicy\n\n";
         return;
     }
+    cout << " () Rozmiar listy synonimow: " << ht->N << "\n";
     node* tmp;
-    cout << "> Analiza tablicy z hashowaniem:\n";
     for(int i=0; i<ht->N; i++){
-        tmp = ht->first[i];
-        cout << "  > Indeks " << i << ": ";
-        while(tmp != nullptr){
-            cout << "[" << tmp->key << ",";
-            cout << tmp->value << "], ";
-            tmp = tmp->next;
-        }cout << "\n";
+        if(ht->first[i] != nullptr){
+            cout << "> Adres komorki - " << i << ": ";
+            tmp = ht->first[i];
+            while(tmp != nullptr){
+                cout << "[" << tmp->key << ", ";
+                cout << tmp->value << "], ";
+                tmp = tmp->next;
+            }cout << "\n";
+        }
     }cout << "\n";
 }
 
-int Hashing(const string &key, const int &mod){
-    int shortcut = 0;
-    for(int i=0; i<key.size(); i++){
-        shortcut += 11*key[i];
+void Init(hashtab* &ht, int n){
+    if(ht != nullptr) delete ht;
+    ht = new hashtab(n);
+}
+
+int Hashing(const string &ke, int mod){
+    int shortcut = 1000;
+    for(int i=0; i<ke.size(); i++){
+        shortcut += 11*ke[i];
         shortcut %= mod;
     }
     return shortcut;
 }
 
-void Init(hashtab* &ht, int n){
-    ht = new hashtab(n);
-}
-
-void Insert(hashtab* ht, const string &ke, int val){
+void Insert(hashtab* ht, const string &ke, const int &val){
     if(ht == nullptr) return;
     int shortcut = Hashing(ke, ht->N);
+
     node* d = new node;
     d->key = ke;
     d->value = val;
@@ -82,43 +83,28 @@ void Insert(hashtab* ht, const string &ke, int val){
     ht->first[shortcut] = d;
 }
 
-void InsertTab(hashtab* &ht, dataset* data, int n){
-    if(ht == nullptr) Init(ht, n);
-    for(int i=0; i<n; i++){
-        Insert(ht, data[i].key, data[i].value);
+void Insert(hashtab* &ht, node* cell){
+    if(ht == nullptr || cell == nullptr) return;
+    int shortcut = Hashing(cell->key, ht->N);
+
+    cell->next = ht->first[shortcut];
+    ht->first[shortcut] = cell;
+}
+
+void Delete(hashtab* &ht, const string &ke){
+    if(ht == nullptr) return;
+    int shortcut = Hashing(ke, ht->N);
+
+    node* d = ht->first[shortcut];
+    if(d == nullptr) return;
+    if(d->key == ke){
+        ht->first[shortcut] = ht->first[shortcut]->next;
+        delete d;
     }
-}
-
-int Find(hashtab* ht, const string &ke){
-    int shortcut = Hashing(ke, ht->N);
-    node* d = ht->first[shortcut];
-    while(d != nullptr){
-        if(d->key == ke) return d->value;
-        d = d->next;
-    }return -1;
-}
-
-void Delete(hashtab* ht, const string &ke){
-    int shortcut = Hashing(ke, ht->N);
-    node* d = ht->first[shortcut];
-    node* tmp;
-
-    if(d != nullptr){
-        if(d->key == ke){
-            if(d->next == nullptr){
-                delete d;
-                ht->first[shortcut] = nullptr;
-            }
-            else{
-                tmp = d;
-                ht->first[shortcut] = d->next;
-                delete tmp;
-            }
-            return;
-        }
+    else{
         while(d->next != nullptr){
             if(d->next->key == ke){
-                tmp = d->next;
+                node* tmp = d->next;
                 d->next = d->next->next;
                 delete tmp;
                 return;
@@ -128,17 +114,87 @@ void Delete(hashtab* ht, const string &ke){
     }
 }
 
+node* GetOff(hashtab* ht, const string &ke){
+    if(ht == nullptr) return nullptr;
+    int shortcut = Hashing(ke, ht->N);
+
+    node* d = ht->first[shortcut];
+    if(d == nullptr) return nullptr;
+    if(d->key == ke){
+        ht->first[shortcut] = ht->first[shortcut]->next;
+        return d;
+    }
+    else{
+        while(d->next != nullptr){
+            if(d->next->key == ke){
+                node* tmp = d->next;
+                d->next = d->next->next;
+                return tmp;
+            }
+            d = d->next;
+        }
+    }
+    return nullptr;
+}
+
+node* Pop(node* &first){
+    if(first == nullptr) return nullptr;
+    node* tmp = first;
+    first = first->next;
+    return tmp;
+}
+
+int Find(hashtab* ht, const string &ke){
+    if(ht == nullptr) return -1;
+    int shortcut = Hashing(ke, ht->N);
+    node* d = ht->first[shortcut];
+
+    while(d != nullptr){
+        if(d->key == ke) return d->value;
+        d = d->next;
+    }
+    return -1;
+}
+
+void TabAdd(hashtab* ht, data t[], int n){
+    for(int i=0; i<n; i++){
+        Insert(ht, t[i].key, t[i].value);
+    }
+}
+
+void Resize(hashtab* &ht, int n){
+    if(ht->N == n) return;
+    hashtab* d = new hashtab(n);
+
+    for(int i=0; i<ht->N;){
+        if(ht->first[i] != nullptr){
+            Insert(d, Pop(ht->first[i]));
+        }
+        else i++;
+    }
+    delete ht;
+    ht = d;
+}
+
+void TabDel(hashtab* ht, string t[], int n){
+    for(int i=0; i<n; i++){
+        Delete(ht, t[i]);
+    }
+}
+
 int main(){
-    dataset data[] = {{"asaxs",5},{"y7y7y",8},{"nuikn",11},{"bnvgf",2},{"rresz",9}};
+    data t[] = {{"cdcdc",45},{"yutyu",14},{"vxdxz",36},{"cioin",51},{"mnvbh",28}};
     hashtab* a = nullptr;
-    Init(a, 5);
-    InsertTab(a, data, 5);
+    Init(a, 8);
+    TabAdd(a, t, 5);
     Wypisz(a);
-
-    cout << "Find nuikn: " << Find(a, "nuikn") << "\n\n";
-    cout << "Delete asaxs:\n";
-    Delete(a, "asaxs");
+    Resize(a, 5);
     Wypisz(a);
-
-    delete a;
+    node* z = GetOff(a, "cdcdc");
+    Wypisz(a);
+    Insert(a, z);
+    Wypisz(a);
+    string del[] = {"yutyu","mnvbh"};
+    TabDel(a, del, 2);
+    Wypisz(a);
 }
