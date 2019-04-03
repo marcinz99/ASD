@@ -36,17 +36,6 @@ int Hashing(int a, int mod){
     return a%mod;
 }
 
-bool IsThere(hashtab* &ht, int val){
-    int shortcut = Hashing(val, ht->N);
-    node* d = ht->first[shortcut];
-
-    while(d != nullptr){
-        if(d->value == val) return true;
-        d = d->next;
-    }
-    return false;
-}
-
 void Add(hashtab* &ht, int val){
     int shortcut = Hashing(val, ht->N);
     node* d = new node;
