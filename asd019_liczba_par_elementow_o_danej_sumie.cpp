@@ -44,6 +44,7 @@ int HowMany(hashtab* &ht, int val){
         if(d->value == val){
             d->q++;
             return d->q;
+        } 
         d = d->next;
     }
     return 0;
