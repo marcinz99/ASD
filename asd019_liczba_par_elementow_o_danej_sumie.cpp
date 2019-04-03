@@ -65,8 +65,8 @@ int LiczbaSum(int t[], int n, int x){
     hashtab* ht = new hashtab(n);
 
     for(int i=0; i<n; i++){
-        licz += tmp = HowMany(ht, t[i]);
-        if(tmp == 0) Add(ht, x-t[i]);
+        //licz += tmp = HowMany(ht, t[i], x);
+        //if(tmp == 0) Add(ht, x-t[i]);
     }
     delete ht;
     return licz;
