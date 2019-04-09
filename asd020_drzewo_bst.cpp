@@ -187,6 +187,7 @@ node* Successor(tree* tr, int val){
     return d;
 }
 
+//delete wymaga poprawy, cos tu nie dziala ;/
 void Delete(tree* &tr, int val){
     node* to_del = Find(tr, val);
     if(to_del == nullptr) return;
@@ -210,14 +211,45 @@ void Delete(tree* &tr, int val){
     delete d;
 }
 
+node* FindIth(node* first, const int &i){
+    static int j;
+    if(first == nullptr || j>=i) return nullptr;
+
+    node* d = FindIth(first->left, i);
+    if(d != nullptr) return d;
+
+    if(++j == i) return first;
+
+    d = FindIth(first->right, i);
+    if(d != nullptr) return d;
+}
+
+int WhichTh(node* first, const int &val){
+    static int j;
+    if(first == nullptr) return -1;
+
+    int d = WhichTh(first->left, val);
+    if(d != -1) return d;
+
+    j++;
+    if(first->value == val) return j;
+
+    d = WhichTh(first->right, val);
+    if(d != -1) return d;
+
+    if(first->value > val) return -1;
+    return -1;
+}
+
 int main(){
     tree* a = nullptr;
-    int t[] = {8, 5, 2, 6, 7};
-    IniTab(a, t, 5);
-    Wypisz(a, PRE);
-    FindPath(a, 7);
-    Delete(a, 8);
-    Wypisz(a, PRE);
+    int t[] = {8, 5, 2, 6, 7, 1, 9, 4, 10, 12};
+    IniTab(a, t, 10);
+    Wypisz(a, IN);
+    FindPath(a, 12);
+    //Delete(a, 8);
+    //Wypisz(a, PRE);
+    cout << WhichTh(a->root, 4);
 
     delete a;
 }
