@@ -187,7 +187,7 @@ node* Successor(tree* tr, int val){
     return d;
 }
 
-//delete wymaga poprawy, cos tu nie dziala ;/
+//nie dziala
 void Delete(tree* &tr, int val){
     node* to_del = Find(tr, val);
     if(to_del == nullptr) return;
@@ -209,6 +209,33 @@ void Delete(tree* &tr, int val){
     if(to_del != d) to_del->value = d->value;
 
     delete d;
+}
+
+//nie dziala
+node* Remove(tree* &tr, int val, node* to_del = nullptr){
+    if(to_del == nullptr) to_del = Find(tr, val);
+    if(to_del == nullptr) return nullptr;
+    node* d = to_del->parent;
+    node* x;
+
+    if(to_del->left != nullptr && to_del->right != nullptr){
+        x = Remove(tr, 0, Successor(tr, to_del->value));
+        x->left = to_del->left;
+        if(x->left != nullptr) x->left->parent = x;
+        x->right = to_del->right;
+        if(x->right != nullptr) x->right->parent = x;
+    }
+    else{
+        if(to_del->left != nullptr) x = to_del->left;
+        else x = to_del->right;
+    }
+    if(x != nullptr) x->parent = d;
+
+    if(d == nullptr) tr->root = x;
+    else if(d->left == to_del) d->left = x;
+    else d->right = x;
+
+    return to_del;
 }
 
 node* FindIth(node* first, const int &i){
@@ -247,9 +274,9 @@ int main(){
     IniTab(a, t, 10);
     Wypisz(a, IN);
     FindPath(a, 12);
-    //Delete(a, 8);
-    //Wypisz(a, PRE);
-    cout << WhichTh(a->root, 4);
+    //Delete(a, 5);
+    delete Remove(a, 5);
+    Wypisz(a, IN);
 
     delete a;
 }
