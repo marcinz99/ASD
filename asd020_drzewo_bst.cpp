@@ -6,6 +6,8 @@ struct node{
     node* left = nullptr;
     node* right = nullptr;
     node* parent = nullptr;
+    int left_subtree = 0;
+    int right_subtree = 0;
 };
 
 struct tree{
@@ -99,10 +101,30 @@ void Insert(tree* &tr, int val){
     if(d->value < val){
         d->right = p;
         d->right->parent = d;
+        d = d->right;
+        while(d->parent != nullptr){
+            if(d->parent->right == d){
+                d->parent->right_subtree += 1;
+            }
+            if(d->parent->left == d){
+                d->parent->left_subtree += 1;
+            }
+            d = d->parent;
+        }
     }
     else{
         d->left = p;
         d->left->parent = d;
+        d = d->left;
+        while(d->parent != nullptr){
+            if(d->parent->right == d){
+                d->parent->right_subtree += 1;
+            }
+            if(d->parent->left == d){
+                d->parent->left_subtree += 1;
+            }
+            d = d->parent;
+        }
     }
 }
 
@@ -187,6 +209,68 @@ node* Successor(tree* tr, int val){
     return d;
 }
 
+node* FindIth(node* first, const int &i){
+    static int j;
+    if(first == nullptr || j>=i) return nullptr;
+
+    node* d = FindIth(first->left, i);
+    if(d != nullptr) return d;
+
+    if(++j == i) return first;
+
+    d = FindIth(first->right, i);
+    if(d != nullptr) return d;
+}
+
+int WhichTh(node* first, const int &val){
+    static int j;
+    if(first == nullptr) return -1;
+
+    int d = WhichTh(first->left, val);
+    if(d != -1) return d;
+
+    j++;
+    if(first->value == val) return j;
+
+    d = WhichTh(first->right, val);
+    if(d != -1) return d;
+
+    if(first->value > val) return -1;
+    return -1;
+}
+
+node* FindIth(tree* tr, int i){
+    node* d = tr->root;
+    node* x;
+
+    while(d != nullptr){
+        if(d->left_subtree+1 == i) return d;
+        if(d->left_subtree+1 > i){
+            d = d->left;
+            continue;
+        }
+        if(d->left_subtree+1 < i){
+            i -= d->left_subtree+1;
+            d = d->right;
+        }
+    }
+    return nullptr;
+}
+
+int WhichTh(tree* tr, int val){
+    node* d = Find(tr, val);
+    if(d == nullptr) return 0;
+    int licz = d->left_subtree + 1;
+
+    while(d->parent != nullptr){
+        if(d->parent->right == d){
+            licz += d->parent->left_subtree+1;
+        }
+        d = d->parent;
+    }
+    return licz;
+}
+
 //nie dziala
 void Delete(tree* &tr, int val){
     node* to_del = Find(tr, val);
@@ -238,45 +322,13 @@ node* Remove(tree* &tr, int val, node* to_del = nullptr){
     return to_del;
 }
 
-node* FindIth(node* first, const int &i){
-    static int j;
-    if(first == nullptr || j>=i) return nullptr;
-
-    node* d = FindIth(first->left, i);
-    if(d != nullptr) return d;
-
-    if(++j == i) return first;
-
-    d = FindIth(first->right, i);
-    if(d != nullptr) return d;
-}
-
-int WhichTh(node* first, const int &val){
-    static int j;
-    if(first == nullptr) return -1;
-
-    int d = WhichTh(first->left, val);
-    if(d != -1) return d;
-
-    j++;
-    if(first->value == val) return j;
-
-    d = WhichTh(first->right, val);
-    if(d != -1) return d;
-
-    if(first->value > val) return -1;
-    return -1;
-}
-
 int main(){
     tree* a = nullptr;
     int t[] = {8, 5, 2, 6, 7, 1, 9, 4, 10, 12};
     IniTab(a, t, 10);
     Wypisz(a, IN);
     FindPath(a, 12);
-    //Delete(a, 5);
-    delete Remove(a, 5);
-    Wypisz(a, IN);
+    cout << WhichTh(a, 7);
 
     delete a;
 }
