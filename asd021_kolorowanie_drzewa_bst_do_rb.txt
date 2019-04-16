@@ -2,7 +2,7 @@
 //n.height – wysokość poddrzewa licząc od węzła n
 //n.min_height – dystans (długość ścieżki) do najbliższego liścia
 
-procedure paint(root n) -> bool:
+procedure paint(node n) -> bool:
 
 if n is nil:
     return true
