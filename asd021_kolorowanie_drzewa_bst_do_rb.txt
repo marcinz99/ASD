@@ -1,0 +1,32 @@
+//n.black_quota – oczekiwana liczba czarnych wêz³ów na œcie¿ce do liœcia od wêz³a n
+//n.height – wysokoœæ poddrzewa licz¹c od wêz³a n
+//n.min_height – dystans (d³ugoœæ œcie¿ki) do najbli¿szego liœcia
+
+procedure paint(root n) -> bool:
+
+if n is nil:
+    return true
+
+if n is root:
+    n.color = black
+    n.black-quota = (n.height+1)/2
+
+else if n.parent is red:
+    n.color = black
+    n.black-quota = n.parent.black-quota.
+
+else (n.parent is black):
+    n.black-quota = n.parent.black-quota-1
+
+    if n.min-height < n.black-quota:
+        \error "nie mo¿na pokolorowaæ, za krótka œcie¿ka"
+	return false 
+
+    if n.height <= n.black-quota*2:
+        n.color = black
+
+    else
+        n.color = red
+
+return paint(n.left) and paint(n.right)
+
