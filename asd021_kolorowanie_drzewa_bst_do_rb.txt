@@ -2,30 +2,30 @@
 //n.height – wysokość poddrzewa licząc od węzła n
 //n.min_height – dystans (długość ścieżki) do najbliższego liścia
 
-procedure paint(node n) -> bool:
+procedure paint(root n) -> bool:
 
 if n is nil:
     return true
 
 if n is root:
     n.color = black
-    n.black-quota = (n.height+1)/2
+    n.black_quota = (n.height+1)/2
 
 else if n.parent is red:
     n.color = black
-    n.black-quota = n.parent.black-quota.
+    n.black_quota = n.parent.black_quota.
 
 else (n.parent is black):
-    n.black-quota = n.parent.black-quota-1
+    n.black_quota = n.parent_black_quota-1
 
-    if n.min-height < n.black-quota:
+    if n.min_height < n.black_quota:
         \error "nie można pokolorować, za krótka ścieżka"
 	return false 
 
-    if n.height <= n.black-quota*2:
+    if n.height <= n.black_quota*2:
         n.color = black
 
-    else
+    else:
         n.color = red
 
 return paint(n.left) and paint(n.right)
