@@ -162,13 +162,18 @@ void Wypisz(kolejka Q){
 enum colors{white, gray, black};
 
 void Prim(Graph* gr, int start=0){
+    ///zainicjuj tablice kolorow
     colors* color = new colors[gr->V];
     for(int i=0; i<gr->V; i++){
         color[i] = white;
     }
+    ///zainicjuj kolejke priorytetowa
     kolejka Q(gr->E);
     node* tmp;
+    ///oznacz aktualny wierzcholek jako przetworzony
     color[start] = black;
+    ///wrzuc do kolejki sciezki do sasiadow aktualnego wierzcholka
+    ///oznaczaj wierzcholki jako odwiedzone
     tmp = gr->vertices[start];
     while(tmp != nullptr){
         if(color[tmp->value] == white){
@@ -178,17 +183,22 @@ void Prim(Graph* gr, int start=0){
         tmp = tmp->next;
     }
 
+    ///zmienne pomocnicze
     int koszt_na_drzewie_rozpinajacym = 0;
     int najkrotszy_z_pozostalych = -((1<<31)+1); //max_int jak cos
     edge x;
 
+    ///dopoki mozna pobrac elementy z kolejki wykonuj co nastepuje
     while(!IsEmpty(Q)){
         //Wypisz(Q); //debug line
         x = GetMin(Q);
+        ///jesli pobrany wierzcholek nie domyka cyklu to jest ok
         if(color[x.b] != black){
+            ///oznacz jako przetworzony
             color[x.b] = black;
             koszt_na_drzewie_rozpinajacym += x.cost;
             cout << "$ " << x.a << " " << x.b << " " << x.cost << endl;
+            ///przejdz po sasiadach nie domykajacych cyklu
             tmp = gr->vertices[x.b];
             while(tmp != nullptr){
                 if(color[tmp->value] != black){
@@ -198,6 +208,7 @@ void Prim(Graph* gr, int start=0){
                 tmp = tmp->next;
             }
         }
+        ///w przeciwnym wypadku sciezka nie moze nalezec do mst
         else{
             if(x.cost < najkrotszy_z_pozostalych){
                 najkrotszy_z_pozostalych = x.cost;
@@ -207,6 +218,7 @@ void Prim(Graph* gr, int start=0){
     cout << "Koszt na drzewie: " << koszt_na_drzewie_rozpinajacym << endl;
     cout << "Najkrotszy pozostaly: " << najkrotszy_z_pozostalych << endl;
     cout << "Dolna granica (suma): " << najkrotszy_z_pozostalych+koszt_na_drzewie_rozpinajacym << endl;
+    ///posprzataj po sobie
     Q.Del();
     delete[] color;
 }
