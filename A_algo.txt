@@ -1,0 +1,244 @@
+###########################################################################################################################################
+DFS:
+
+procedure DFS_Visit(graph* G, colors color[], int u) -> void
+	color[u] = gray
+	
+	for every v in G->adj(u)
+		if(color[v] == white)
+			DFS_Visit(G, color, v)
+	
+	color[u] = black
+end
+
+procedure DFS(graph* G, int s) -> void
+	color[] = new colors[G->V]
+	for(i=0; i<G->V; i++)
+		color[i] = white
+	
+	for(i=0; i<G->V; i++)
+		if(color[i] == white)
+			DFS_Visit(G, color, s)
+end
+
+
+###########################################################################################################################################
+BFS:
+
+procedure BFS(graph* G, int s) -> void
+	color[] = new colors[G->V]
+	for(i=0; i<G->V; i++)
+		color[i] = white
+	
+	Q = new <VORTEX of: int> Queue
+	Q.put(s)
+	color[s] = gray
+	
+	while(!Q.isEmpty())
+		u = Q.get()
+		for every v in G->adj(u)
+			if(color[v] == white)
+				Q.put(v)
+				color[v] = gray
+		color[u] = black
+end
+
+
+###########################################################################################################################################
+DFS na stosie:
+
+procedure DFS_Stacked(graph* G, int s) -> void
+	color[] = new colors[G->V]
+	for(i=0; i<G->V; i++)
+		color[i] = white
+	
+	S = new <VORTEX of: int> Stack
+	S.push(s)
+	color[s] = gray
+	
+	while(!S.isEmpty())
+		u = S.pop()
+		for every v in G->adj(u)
+			if(color[v] == white)
+				S.push(v)
+				color[v] = gray
+		color[u] = black
+end
+
+
+###########################################################################################################################################
+Sortowanie topologiczne:
+
+procedure TS_DFS(graph* G, bool visited[], int u, LIST& result) -> void
+	visited[u] = true
+	
+	for every v in G->adj(u)
+		if(color[v] == white)
+			DFS_Visit(G, color, v)
+	
+	result.pushFront(u)
+		
+end
+
+procedure TopoSort(graph* G)
+
+end
+
+
+###########################################################################################################################################
+Cykl Eulera:
+
+
+###########################################################################################################################################
+Silnie spójne składowe:
+
+
+###########################################################################################################################################
+Mosty:
+
+
+###########################################################################################################################################
+Punkty artykulacji:
+
+
+###########################################################################################################################################
+Prim:
+
+
+###########################################################################################################################################
+Kruskal:
+
+
+###########################################################################################################################################
+Dijkstra:
+	
+procedure Dijkstra(graph* G, int s) -> int parent[]:
+	Q = new <MIN_HEAP of: int by int> PR_Queue
+	parent[] = new int[G->V]
+	distance[] = new int[G->V]
+	for(i=0; i<G->V; i++)
+		parent[i] = -1
+		distance[i] = inf
+		Q.put(i by distance[i])
+	distance[s] = 0
+	Q.heapify(s by distance[s])
+
+	while(!Q.isEmpty())
+		u = Q.get()
+		for every v in G->adj(u)
+			if(distance[v] > distance[u] + d(u, v))
+				distance[v] = distance[u] + d(u, v)
+				Q.heapify(v by distance[v])
+				parent[v] = u
+	
+	return parent
+end
+
+procedure Print(int parent[], int v) -> void:
+	if(parent[v] != -1)
+		Print(parent, parent[v])
+	write(v)
+end
+
+procedure PrintShortestPath(graph* G, int s, int v) -> void:
+	parent[] = Dijkstra(G, s)
+	write("Shortest Path: ")
+	Print(parent, v)
+end
+
+
+###########################################################################################################################################
+Bellman-Ford:
+
+procedure BellmanFord(graph* G, int s) -> int parent[]:
+	parent[] = new int[G->V]
+	distance[] = new int[G->V]
+	for(i=0; i<G->V; i++)
+		parent[i] = -1
+		distance[i] = inf
+	distance[s] = 0
+	
+	for(i=0; i<G->V; i++)
+		for every edge (u, v) in G->edges
+			if(distance[v] > distance[u] + d(u,v))
+				distance[v] = distance[u] + d(u,v)
+				parent[v] = u
+	
+	for every edge (u, v) in G->edges
+		if(distance[v] > distance[u] + d(u,v))
+			error: Negative_Cycle
+	
+	return parent
+end
+
+procedure Print(int parent[], int v) -> void:
+	if(parent[v] != -1)
+		Print(parent, parent[v])
+	write(v)
+end
+
+procedure PrintShortestPath(graph* G, int s, int v) -> void:
+	try:
+		parent[] = BellmanFord(G, s)
+	catch(Negative_Cycle)
+		write("Negative Cycle Found")
+	catch(none)
+		write("Shortest Path: ")
+		Print(parent, v)
+end
+
+
+###########################################################################################################################################
+Floyd-Warshall:
+
+procedure FloydWarshall(graph* G) -> int next[][]:
+	m[][] = new int[G->V][G->V]
+	if(G->vertices !is Adjacency_Matrix)
+		for every edge (u, v) in G->edges
+			m[u][v] = d(u, v)
+	else
+		m =.copy G->vertices
+	
+	next[][] = new int[G->V][G->V]
+	for(i=0; i<G->V; i++)
+		for(j=0; j<G->V; j++)
+			if(m[i][j] != inf)
+				next[i][j] = j
+			else
+				next[i][j] = -1
+	
+	for(k=0; k<G->V; k++)
+		for(i=0; i<G->V; i++)
+			for(j=0; j<G->V; j++)
+				if(m[i][k] > m[i][k] + m[k][j])
+					m[i][k] = m[i][k] + m[k][j]
+					next[i][j] = next[i][k]
+	
+	for(k=0; k<G->V; k++)
+		for(i=0; i<G->V; i++)
+			for(j=0; j<G->V; j++)
+				if(m[i][k] > m[i][k] + m[k][j])
+					m[i][k] = -inf
+					next[i][j] = -1
+					error: Negative_Cycle
+	
+	return next
+end
+
+procedure Print(int next[][], int s, int v) -> void:
+	for(i=s; i!=-1; i=next[s][i])
+		write(i)
+end
+
+procedure PrintShortestPath(graph* G, int s, int v) -> void:
+	try:
+		next[][] = FloydWarshall(G, s)
+	catch(Negative_Cycle)
+		write("Negative Cycle Found")
+	catch(none)
+		write("Shortest Path: ")
+		Print(next, s)
+end
+
+
+###########################################################################################################################################
