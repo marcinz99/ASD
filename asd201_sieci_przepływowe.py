@@ -92,7 +92,6 @@ def fordFulkerson(gr, s=-1, t=-1):
 	
 	print("\nMaksymalny przepływ: {}".format(max_flow))
 
-
 def main():
 	gr = createGraphRepresentation()
 	fordFulkerson(gr)
